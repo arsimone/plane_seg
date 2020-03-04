@@ -3,4 +3,5 @@
     <remap from="/plane_seg/pose" to="/state_estimator/pose_in_odom"/>
     <param name="/run_test_program" value="true" />
   </node>
+  <node name="rviz_plane_seg" pkg="rviz" type="rviz" args="-d $(find plane_seg_ros)/config/plane_seg.rviz"  />
 </launch>

@@ -194,34 +194,13 @@ void Pass::processFromFile(int test_example){
   std::string inFile;
   std::string home_dir = getenv("HOME");
   Eigen::Vector3f origin, lookDir;
-  if (test_example == 0){ // LIDAR example from Atlas during DRC
-    inFile = home_dir + "/drs_testing_data/terrain/tilted-steps.pcd";
-    origin <<0.248091, 0.012443, 1.806473;
-    lookDir <<0.837001, 0.019831, -0.546842;
-  }else if (test_example == 1){ // LIDAR example from Atlas during DRC
-    inFile = home_dir + "/drs_testing_data/terrain/terrain_med.pcd";
-    origin << -0.028862, -0.007466, 0.087855;
-    lookDir << 0.999890, -0.005120, -0.013947;
-  }else if (test_example == 2){ // LIDAR example from Atlas during DRC
-    inFile = home_dir + "/drs_testing_data/terrain/terrain_close_rect.pcd";
-    origin << -0.028775, -0.005776, 0.087898;
-    lookDir << 0.999956, -0.005003, 0.007958;
-  }else if (test_example == 3){ // RGBD (Realsense D435) example from ANYmal
-    inFile = home_dir + "/drs_testing_data/terrain/anymal/ori_entrance_stair_climb/06.pcd";
-    origin << -0.028775, -0.005776, 0.987898;
-    lookDir << 0.999956, -0.005003, 0.007958;
-  }else if (test_example == 4){ // Leica map
-    inFile = home_dir + "/drs_testing_data/leica/race_arenas/RACE_crossplaneramps_sub1cm_cropped_meshlab_icp.ply";
-    origin << -0.028775, -0.005776, 0.987898;
-    lookDir << 0.999956, -0.005003, 0.007958;
-  }else if (test_example == 5){ // Leica map
-    inFile = home_dir + "/drs_testing_data/leica/race_arenas/RACE_stepfield_sub1cm_cropped_meshlab_icp.ply";
-    origin << -0.028775, -0.005776, 0.987898;
-    lookDir << 0.999956, -0.005003, 0.007958;
+  if (test_example == 0){ // Sandbox
+    inFile = home_dir + "/catkin_ws/src/plane_seg/point_clouds/sandbox.ply";
+    origin << 0.0, 0.0, 0.0;
+    lookDir << 1.0, 0.0, 0.0;
   }
 
-  std::cout << "\nProcessing test example " << test_example << "\n";
-  std::cout << inFile << "\n";
+  std::cout << "\nProcessing " << inFile << "\n";
 
   std::size_t found_ply = inFile.find(".ply");
   std::size_t found_pcd = inFile.find(".pcd");
@@ -230,6 +209,7 @@ void Pass::processFromFile(int test_example){
   if (found_ply!=std::string::npos){
     std::cout << "readply\n";
     pcl::io::loadPLYFile(inFile, *inCloud);
+    std::cout << "Loading done\n";
   }else if (found_pcd!=std::string::npos){
     std::cout << "readpcd\n";
     pcl::io::loadPCDFile(inFile, *inCloud);
@@ -245,6 +225,7 @@ void Pass::processFromFile(int test_example){
 
 void Pass::processCloud(planeseg::LabeledCloud::Ptr& inCloud, Eigen::Vector3f origin, Eigen::Vector3f lookDir){
 
+  std::cout << "In Pass::processCloud ...\n";
   planeseg::BlockFitter fitter;
   fitter.setSensorPose(origin, lookDir);
   fitter.setCloud(inCloud);
@@ -341,6 +322,7 @@ void Pass::publishResult(){
   publishHullsAsCloud(cloud_ptrs, 0, 0);
   publishHullsAsMarkers(cloud_ptrs, 0, 0);
 
+  std::cout << "Results published\n";
   //pcl::PCDWriter pcd_writer_;
   //pcd_writer_.write<pcl::PointXYZ> ("/home/mfallon/out.pcd", cloud, false);
   //std::cout << "blocks: " << result_.mBlocks.size() << " blocks\n";
@@ -484,12 +466,6 @@ int main( int argc, char** argv ){
   if (run_test_program){
     std::cout << "Running test examples\n";
     app->processFromFile(0);
-    app->processFromFile(1);
-    app->processFromFile(2);
-    app->processFromFile(3);
-    // RACE examples don't work well
-    //app->processFromFile(4);
-    //app->processFromFile(5);
     exit(-1);
   }
 
